@@ -15,6 +15,9 @@ A simple command line interface to manage tasks categorized by different categor
 
 ## Features
 
-- Add tasks
-- View all tasks
-- Delete tasks
+- Add projects
+- View all projects
+- Add tasks to projects
+- List all task for a specific project 
+
+
