@@ -33,7 +33,7 @@ A simple command line interface to manage tasks categorized by different categor
 
 3. Demo Commands:
 
-    - Add a project: add_project "Project 1"
-    - List projects: list_projects
-    - Add a task: add_task 1 "Task 1"
-    - List tasks: list_tasks 1
+    - Add Users: add-user
+    - List projects: list-projects
+    - Add a task: add-task 1 "Task 1"
+    - List tasks: list-tasks 1
