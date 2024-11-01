@@ -20,4 +20,20 @@ A simple command line interface to manage tasks categorized by different categor
 - Add tasks to projects
 - List all task for a specific project 
 
+## Running your Application
 
+1. **Initialize the database:**
+
+   When you first run the application, it will create the database and tables.
+
+2. **Start the CLI:**
+
+   ```bash
+   pipenv run python cli.py
+
+3. Demo Commands:
+
+    - Add a project: add_project "Project 1"
+    - List projects: list_projects
+    - Add a task: add_task 1 "Task 1"
+    - List tasks: list_tasks 1
