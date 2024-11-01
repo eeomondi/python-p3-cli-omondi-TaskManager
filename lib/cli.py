@@ -1,53 +1,61 @@
-import click
-from database import get_session
-from models import Project, Task, Base
+import sys
+from lib.database import Session
+from models import Task, Category
 
-@click.group()
-def cli():
-    """A simple task manager CLI."""
-    pass
+def display_menu():
+    print("\nTask Manager")
+    print("1. Add Task")
+    print("2. View Tasks")
+    print("3. Delete Task")
+    print("4. Exit")
 
-@cli.command()
-@click.argument('name')
-def add_project(name):
-    """Add a new project."""
-    session = get_session()
-    project = Project(name=name)
-    session.add(project)
-    session.commit()
-    click.echo(f"Added project: {project.name}")
+def add_task(session):
+    title = input("Enter task title: ")
+    description = input("Enter task description: ")
+    category_name = input("Enter category name: ")
 
-@cli.command()
-def list_projects():
-    """List all projects."""
-    session = get_session()
-    projects = session.query(Project).all()
-    for project in projects:
-        click.echo(f"Project ID: {project.id}, Name: {project.name}")
+    category = session.query(Category).filter_by(name=category_name).first()
+    if not category:
+        category = Category(name=category_name)
+        session.add(category)
+        session.commit()
 
-@cli.command()
-@click.argument('project_id')
-@click.argument('title')
-def add_task(project_id, title):
-    """Add a new task to a project."""
-    session = get_session()
-    task = Task(title=title, project_id=project_id)
+    task = Task(title=title, description=description, category=category)
     session.add(task)
     session.commit()
-    click.echo(f"Added task: {task.title} to project ID: {project_id}")
+    print("Task added!")
 
-@cli.command()
-@click.argument('project_id')
-def list_tasks(project_id):
-    """List all tasks for a project."""
-    session = get_session()
-    tasks = session.query(Task).filter(Task.project_id == project_id).all()
+def view_tasks(session):
+    tasks = session.query(Task).all()
     for task in tasks:
-        click.echo(f"Task ID: {task.id}, Title: {task.title}")
+        print(f"{task.id}: {task.title} - {task.description} [Category: {task.category.name}]")
+
+def delete_task(session):
+    task_id = int(input("Enter task ID to delete: "))
+    task = session.query(Task).filter_by(id=task_id).first()
+    if task:
+        session.delete(task)
+        session.commit()
+        print("Task deleted!")
+    else:
+        print("Task not found.")
 
 def main():
-    Base.metadata.create_all(get_engine())
-    cli()
+    session = Session()
+    while True:
+        display_menu()
+        choice = input("Choose an option: ")
+        if choice == '1':
+            add_task(session)
+        elif choice == '2':
+            view_tasks(session)
+        elif choice == '3':
+            delete_task(session)
+        elif choice == '4':
+            session.close()
+            sys.exit()
+        else:
+            print("Invalid choice.")
 
 if __name__ == '__main__':
     main()

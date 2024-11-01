@@ -1,12 +1,12 @@
 from logging.config import fileConfig
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-from alembic import context
+from sqlalchemy import engine_from_config # type: ignore
+from sqlalchemy import pool # type: ignore
+from alembic import context # type: ignore
 
 # Import your Base from models.py
 from models import Base  # Ensure this path is correct based on your structure
 
-# this is the Alembic Config object
+# Alembic Config object
 config = context.config
 
 # Interpret the config file for Python logging.
