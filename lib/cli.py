@@ -1,6 +1,6 @@
 import click
 from database import init_db, SessionLocal
-from models import User, Task
+from models import User
 
 @click.group()
 def cli():
