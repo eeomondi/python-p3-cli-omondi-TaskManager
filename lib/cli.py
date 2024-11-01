@@ -1,61 +1,42 @@
-import sys
-from lib.database import Session
-from models import Task, Category
+import click
+from models import Project, Task
+from database import SessionLocal, init_db
 
-def display_menu():
-    print("\nTask Manager")
-    print("1. Add Task")
-    print("2. View Tasks")
-    print("3. Delete Task")
-    print("4. Exit")
+init_db()
 
-def add_task(session):
-    title = input("Enter task title: ")
-    description = input("Enter task description: ")
-    category_name = input("Enter category name: ")
+@click.group()
+def cli():
+    pass
 
-    category = session.query(Category).filter_by(name=category_name).first()
-    if not category:
-        category = Category(name=category_name)
-        session.add(category)
-        session.commit()
+@cli.command()
+@click.option('--name', prompt='Project name', help='Name of the project.')
+def create_project(name):
+    db = SessionLocal()
+    project = Project(name=name)
+    db.add(project)
+    db.commit()
+    click.echo(f'Project "{name}" created!')
 
-    task = Task(title=title, description=description, category=category)
-    session.add(task)
-    session.commit()
-    print("Task added!")
+@cli.command()
+def list_projects():
+    db = SessionLocal()
+    projects = db.query(Project).all()
+    for project in projects:
+        click.echo(f'Project ID: {project.id}, Name: {project.name}')
 
-def view_tasks(session):
-    tasks = session.query(Task).all()
-    for task in tasks:
-        print(f"{task.id}: {task.title} - {task.description} [Category: {task.category.name}]")
-
-def delete_task(session):
-    task_id = int(input("Enter task ID to delete: "))
-    task = session.query(Task).filter_by(id=task_id).first()
-    if task:
-        session.delete(task)
-        session.commit()
-        print("Task deleted!")
+@cli.command()
+@click.argument('project_id', type=int)
+def delete_project(project_id):
+    db = SessionLocal()
+    project = db.query(Project).filter(Project.id == project_id).first()
+    if project:
+        db.delete(project)
+        db.commit()
+        click.echo(f'Project ID {project_id} deleted.')
     else:
-        print("Task not found.")
+        click.echo(f'Project ID {project_id} not found.')
 
-def main():
-    session = Session()
-    while True:
-        display_menu()
-        choice = input("Choose an option: ")
-        if choice == '1':
-            add_task(session)
-        elif choice == '2':
-            view_tasks(session)
-        elif choice == '3':
-            delete_task(session)
-        elif choice == '4':
-            session.close()
-            sys.exit()
-        else:
-            print("Invalid choice.")
+# Similar commands for Task...
 
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    cli()
